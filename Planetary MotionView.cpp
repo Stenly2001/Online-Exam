@@ -55,6 +55,10 @@ CPlanetaryMotionView::CPlanetaryMotionView() noexcept
 	x1 = 300 + 150 * cos(3);
 	y1 = 200 + 150 * sin(3);
 	m_iCounter = 0;
+	x2 = 300 + 200 * cos(3);
+	y2 = 200 + 200 * sin(3);
+	x3 = 300 + 250 * cos(3);
+	y3 = 200 + 250 * sin(3);
 }
 
 CPlanetaryMotionView::~CPlanetaryMotionView()
@@ -78,13 +82,58 @@ void CPlanetaryMotionView::OnDraw(CDC* pDC)
 	if (!pDoc)
 		return;
 	{
+		CPen orbitPen;
+		orbitPen.CreatePen(PS_SOLID, 2, RGB(100, 100, 255)); 
+		CPen* pOldPen = pDC->SelectObject(&orbitPen);
+
+		// Draw the orbit
+		pDC->Ellipse(550, 400, 50, 0); 
+
+		pDC->SelectObject(pOldPen);
+
+		// Planet color (blue)
+		CPen planetPen;
+		planetPen.CreatePen(PS_SOLID, 3, RGB(0, 0, 255)); // Blue planet outline
+		CBrush planetBrush(RGB(0, 0, 255));               // Blue fill
+		CBrush* pOldBrush = pDC->SelectObject(&planetBrush);
+
+		// Draw the planet
+		pDC->Ellipse(x3 + 20, y3 + 20, x3 - 20, y3 - 20); 
+
+		pDC->SelectObject(pOldBrush);
+		pDC->SelectObject(pOldPen);
+
+		// Rings color (red)
+		CPen ringPen;
+		ringPen.CreatePen(PS_SOLID, 1, RGB(255, 0, 0)); // Red rings
+		pOldPen = pDC->SelectObject(&ringPen);
+
+		// Draw rings (outer to inner)
+		pDC->Ellipse(x3 + 30, y3 + 15, x3 - 30, y3 - 15); // Outer ring
+		pDC->Ellipse(x3 + 25, y3 + 10, x3 - 25, y3 - 10); // Inner ring
+
+		pDC->SelectObject(pOldPen);
+	}
+
+	{
+
+		CPen green;
+
+		green.CreatePen(PS_SOLID, 3, RGB(0, 255, 0));
+		CPen* p04dPen = pDC->SelectObject(&green);
+		pDC->Ellipse(500, 400, 100, 0); //Outer ellipse
+		pDC->Ellipse(x2 + 20, y2 + 20, x2 - 20, y2 - 20); //Outer planet ellipse
+
+		pDC->SelectObject(p04dPen);
+	}
+	{
 	;
 		CPen cyan;
 
 		cyan.CreatePen(PS_SOLID, 3, RGB(0, 204, 204));
 		CPen* p02dPen = pDC->SelectObject(&cyan);
-		pDC->Ellipse(450, 350, 150, 50); //Outer ellipse
-		pDC->Ellipse(x1 + 20, y1 + 20, x1 - 20, y1 - 20); //Outer planet ellipse
+		pDC->Ellipse(450, 350, 150, 50); //Middle ellipse
+		pDC->Ellipse(x1 + 20, y1 + 20, x1 - 20, y1 - 20); //Middle planet ellipse
 
 		pDC->SelectObject(p02dPen);
 
@@ -97,7 +146,7 @@ void CPlanetaryMotionView::OnDraw(CDC* pDC)
 		red.CreatePen(PS_SOLID, 3, RGB(255, 51, 51));
 		CPen* p03dPen = pDC->SelectObject(&red);
 		pDC->Ellipse(400, 300, 200, 100); //Middle ellipse
-		pDC->Ellipse(x + 20, y + 20, x - 20, y - 20); //Outer planet ellipse
+		pDC->Ellipse(x + 20, y + 20, x - 20, y - 20); //Middle planet ellipse
 
 		pDC->SelectObject(p03dPen);
 	}
@@ -214,6 +263,10 @@ UINT CPlanetaryMotionView::StartThread(LPVOID Param)
 		pView->y = 200 + 100 * sin(j);
 		pView->x1 = 300 + 150 * cos(j + 3);
 		pView->y1 = 200 + 150 * sin(j + 3);
+		pView->x2 = 300 + 200 * cos(j + 3);
+		pView->y2 = 200 + 200 * sin(j + 3);
+		pView->x3 = 300 + 250 * cos(j + 3);
+		pView->y3 = 200 + 250 * sin(j + 3);
 
 		pView->Invalidate();
 		Sleep(400);
